@@ -44,7 +44,36 @@ Copyright &copy; 2025 The authors
 # can be defined using TOML syntax.
 #
 # Read more: https://zensical.org/docs/setup/navigation/
-nav = [{ "Get started" = "index.md" }]
+nav = [
+    { "Get started" = "index.md" },
+    { "机器学习" = [
+        "具身智能/学习路线.md",
+        "具身智能/机器学习笔记.md
+    ]},
+    { "图像处理相关" = [
+        "标定/cameraCalibration.md",
+        "3D视觉/Dyn HaMR.md"
+    ]},
+    {
+        "英语阅读" = [
+            "New_York_Times.md",
+            "Science_Daily.md",
+            "The_Telegraph.md"
+        ]
+    },
+    {
+        "骑行" = [
+            "有氧训练方法.md",
+            "骑行中的一些问题.md
+        ]
+    },
+    {
+        "徒步" = [
+            "徒步注意事项.md",
+            "子午峪.md"
+        ]
+    }
+]
 
 # With the "extra_css" option you can add your own CSS styling to customize
 # your Zensical project according to your needs. You can add any number of
