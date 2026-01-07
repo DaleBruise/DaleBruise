@@ -304,7 +304,7 @@ toggle.name = "Switch to light mode"
 #link = "https://github.com/user/repo"
 
 [project.markdown_extensions.pymdownx.arithmatex]
-generic = true
+    generic = true
 [project.markdown_extensions.def_list]
 [project.markdown_extensions.pymdownx.tasklist]
-custom_checkbox = true
+    custom_checkbox = true
