@@ -214,7 +214,7 @@ features = [
     # When tabs are enabled, top-level sections are rendered in a menu layer
     # below the header for viewports above 1220px, but remain as-is on mobile.
     # https://zensical.org/docs/setup/navigation/#navigation-tabs
-    #"navigation.tabs",
+    "navigation.tabs",
 
     # When sticky tabs are enabled, navigation tabs will lock below the header
     # and always remain visible when scrolling down.
@@ -224,7 +224,7 @@ features = [
     # A back-to-top button can be shown when the user, after scrolling down,
     # starts to scroll up again.
     # https://zensical.org/docs/setup/navigation/#back-to-top-button
-    navigation.top"
+    navigation.top",
 
     # When anchor tracking is enabled, the URL in the address bar is
     # automatically updated with the active anchor as highlighted in the table
