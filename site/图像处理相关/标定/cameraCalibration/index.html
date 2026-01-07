@@ -1,0 +1,1842 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A new project generated from the default template project.">
+      
+      
+        <meta name="author" content="<Fangrb>">
+      
+      
+      
+        <link rel="prev" href="../../3D%20%E8%A7%86%E8%A7%89/Dyn%20HaMR/">
+      
+      
+        <link rel="next" href="../../../%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%85%B7%E8%BA%AB%E6%99%BA%E8%83%BD/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.15">
+    
+    
+      
+        <title>相机标定流程和相关原理 - Fangrb's Cite</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.f1b6466b.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+  
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+  
+  <style>:root{}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Fangrb&#x27;s Cite" class="md-header__button md-logo" aria-label="Fangrb's Cite" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Fangrb's Cite
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              相机标定流程和相关原理
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Fangrb&#x27;s Cite" class="md-nav__button md-logo" aria-label="Fangrb's Cite" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    Fangrb's Cite
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-rocket" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Get started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../markdown/" class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.27 19.385H1.73A1.73 1.73 0 0 1 0 17.655V6.345a1.73 1.73 0 0 1 1.73-1.73h20.54A1.73 1.73 0 0 1 24 6.345v11.308a1.73 1.73 0 0 1-1.73 1.731zM5.769 15.923v-4.5l2.308 2.885 2.307-2.885v4.5h2.308V8.078h-2.308l-2.307 2.885-2.308-2.885H3.46v7.847zM21.232 12h-2.309V8.077h-2.307V12h-2.308l3.461 4.039z"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Markdown in 5min
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    图像处理相关
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    图像处理相关
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3D 视觉
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    3D 视觉
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../3D%20%E8%A7%86%E8%A7%89/Dyn%20HaMR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dyn-HaMR: Recovering 4D Interacting Hand Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    标定
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    标定
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相机标定流程和相关原理
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相机标定流程和相关原理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1、相机畸变
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1、相机畸变">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1、径向畸变
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2、切向畸变
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2、畸变矫正方法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2、畸变矫正方法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1、世界坐标系点-&gt;相机坐标系点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2、相机坐标系点-&gt;图像坐标系点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3、图像坐标系点-&gt;应用相机径向畸变后的图像坐标系点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4、应用相机径向畸变后的图像坐标系点-&gt;应用相机切向畸变后的图像坐标系点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5、应用相机畸变后的点-&gt;真实图像坐标系下的点
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="附录1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        径向畸变参数计算
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录2
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    机器学习
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    机器学习
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    具身智能
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    具身智能
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%85%B7%E8%BA%AB%E6%99%BA%E8%83%BD/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    学习路线
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%85%B7%E8%BA%AB%E6%99%BA%E8%83%BD/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    机器学习笔记
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    英语阅读
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    英语阅读
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../%E8%8B%B1%E8%AF%AD%E9%98%85%E8%AF%BB/New_York_Times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    New York Times
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../%E8%8B%B1%E8%AF%AD%E9%98%85%E8%AF%BB/Science_Daily/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Science Daily
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../%E8%8B%B1%E8%AF%AD%E9%98%85%E8%AF%BB/The_Telegraph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Telegraph
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    骑行
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    骑行
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../%E9%AA%91%E8%A1%8C/%E6%9C%89%E6%B0%A7%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    骑行有氧训练
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../%E9%AA%91%E8%A1%8C/%E9%AA%91%E8%A1%8C%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    骑行中的一些问题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1、相机畸变
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1、相机畸变">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1、径向畸变
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2、切向畸变
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2、畸变矫正方法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2、畸变矫正方法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1、世界坐标系点-&gt;相机坐标系点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2、相机坐标系点-&gt;图像坐标系点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3、图像坐标系点-&gt;应用相机径向畸变后的图像坐标系点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4、应用相机径向畸变后的图像坐标系点-&gt;应用相机切向畸变后的图像坐标系点
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5、应用相机畸变后的点-&gt;真实图像坐标系下的点
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="附录1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        径向畸变参数计算
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录2
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Get started
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../../3D%20%E8%A7%86%E8%A7%89/Dyn%20HaMR/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    图像处理相关
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    标定
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+<h1 id="_1">相机标定流程和相关原理<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>相机标定总的来讲，就是将由于相机本身的特性——“鱼眼效应”造成的畸变现象通过一定的方法修正过来。并且，我们还可以补偿相机外界旋转造成的偏移。下面将会介绍相机标定的原理和我们的解决方法, 本文章是介绍针对类似小孔成像面阵相机的标定进行介绍。 </p>
+<h2 id="1">1、相机畸变<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>为什么我们要相机标定？难道相机看到的东西，不就是我们想要的东西了吗？其实我们在一般的图像处理中是不需要进行标定流程的，只有我们需要将图像中的位置与现实中的位置对应起来以后，才需要进行一系列标定流程，相机标定只是我们标定流程中的一部分。根据项目的不同，我们需要走的标定流程不同，但是可以确认的是，相机标定是大概率被需要的，是在全套标定流程中简单但至关重要的一环，也就是相机的畸变修正。  </p>
+<div align=center>
+<img src="https://raw.githubusercontent.com/DaleBruise/DaleBruise.github.io/main/docs/ImagesInFiles/cameraCalibration/pinHole.png"/>  
+</div>
+
+<p>对于小孔成像模型（如上图所示），一般的镜头畸变是由于透镜存在球面像差（由于透镜或者镜子的球形形状引起的像差，使得中心光线和边缘光线有不同的焦点）导致的。比如，我们投影一个直线时，越靠近边缘的部分，直线的弯曲程度就会越大。类似地，根据镜头不同的光学特性，就会有不同的畸变现象。      </p>
+<h3 id="11">1.1、径向畸变<a class="headerlink" href="#11" title="Permanent link">&para;</a></h3>
+<p>我们经常遇到的畸变类型为径向畸变，径向畸变的特性就是从图像中心点出发，与靠近边缘的位置现象越明显，其大致可以分为桶型畸变和枕型畸变。<br />
+ - <strong>桶型畸变</strong>中，图像的放大倍率随距主光轴（不偏移）的距离而减小，类似将一个图像投影到一个桶型或者球形的物体上。鱼眼镜头采用半球形视角，利用这种畸变可以扩大我们的视野范围，牺牲的则是物体在视野中的形变。  </p>
+<div align=center>
+<img src="https://raw.githubusercontent.com/DaleBruise/DaleBruise.github.io/main/docs/ImagesInFiles/cameraCalibration/barrel_distortion.png" width="192" height="193">  
+</div>
+
+<ul>
+<li><strong>枕型畸变</strong>中，与桶型畸变相反，图像的放大倍数随着距主光轴（不偏移）的距离而变大，没有穿过图像中心的线条会向内弯曲。凸球面透镜往往就会产生枕型畸变。  </li>
+</ul>
+<div align=center>
+<img src="https://raw.githubusercontent.com/DaleBruise/DaleBruise.github.io/main/docs/ImagesInFiles/cameraCalibration/pincushion_distortion.png" width="192" height="193">  
+</div>
+
+<p>如果我们想要使用数学语言去表达此类畸变的程度，那么一般来讲，我们可以使用二次多项式来表达，他们随着主光轴的距离的平方次增加。后面就会讲到我们如何使用数学方法来补偿畸变带来的误差。</p>
+<h3 id="12">1.2、切向畸变<a class="headerlink" href="#12" title="Permanent link">&para;</a></h3>
+<p>切向畸变是由于感光元件和镜头不平行导致的，我们在程序中进行畸变矫正的过程中，一般不考虑切向畸变。</p>
+<h2 id="2">2、畸变矫正方法<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>相机畸变的矫正不需要我们去移动平台或者其他平面，根据张正友提出的方法，对于大多数的情况，我们只需要一张棋盘格图像即可矫正，如下图所示。  </p>
+<div align=center>
+<img src="https://raw.githubusercontent.com/DaleBruise/DaleBruise.github.io/main/docs/ImagesInFiles/cameraCalibration/chessboard.png" width="210" height="143">  
+</div>
+
+<p>棋盘格所在平面要和镜头镜头尽量平行，也就是棋盘格所在平面的Z轴要尽量与镜头所在平面垂直，从而我们的精度可以更高。搭建好平台后，我们就可开始对相机进行建模，相机可以视为小孔成像模型，在此模型下，我们使用一个变换矩阵来将实际的坐标点投影到屏幕上：  </p>
+<div class="arithmatex">\[ sm' = A[R|t]M' \]</div>
+<p>或者   </p>
+<div class="arithmatex">\[
+s\begin{bmatrix}
+u \\ 
+v \\ 
+1 \end{bmatrix}
+= \begin{bmatrix} f_x &amp; 0 &amp; c_x \\ 
+0 &amp; f_y &amp; c_y \\
+0 &amp; 0 &amp; 1 
+\end{bmatrix}
+\begin{bmatrix} r_{11} &amp; r_{12} &amp; r_{13} &amp; t_1 \\
+r_{21} &amp; r_{22} &amp; r_{23} &amp; t_2 \\ 
+r_{31} &amp; r_{32} &amp; r_{33} &amp; t_3 \end{bmatrix}
+\begin{bmatrix} X \\ 
+Y \\ 
+Z \\
+1 
+\end{bmatrix} 
+\]</div>
+<p>其中：
+- <span class="arithmatex">\((X,Y,Z)\)</span> 是实际坐标点
+- <span class="arithmatex">\((u,v)\)</span> 是投影到图像坐标系下的坐标点
+- 矩阵 <span class="arithmatex">\(A\)</span> 中保存的信息是相机的内参
+- <span class="arithmatex">\((c_x, c_y)\)</span> 是图像中心坐标
+- <span class="arithmatex">\(f_X,f_y\)</span> 是以像素为单位的焦距
+如果我们想要将模型应用在变焦镜头中，由于 <span class="arithmatex">\(f_x,f_y\)</span> 改变了，所以对于不同焦距的镜头，我们需要进行不同的建模。反之，如果仅仅只是对图像的等比例放大和缩小，那么这个模型就可以反复使用不需要额外改变。
+根据我们上述描述的相机模型，我们可以使用以下流程来对相机畸变的修正：</p>
+<ol>
+<li>世界坐标系(WCS)-&gt;相机坐标系(CCS)</li>
+<li>相机坐标系点-&gt;图像坐标系点(IPCS)</li>
+<li>图像坐标系点-&gt;应用相机径向畸变后的图像坐标系点</li>
+<li>*应用相机径向畸变后的图像坐标系点-&gt;应用相机切向畸变后的图像坐标系点（选择性）</li>
+<li>应用相机畸变后的点-&gt;真实图像坐标系下的点</li>
+</ol>
+<h3 id="21-">2.1、世界坐标系点-&gt;相机坐标系点<a class="headerlink" href="#21-" title="Permanent link">&para;</a></h3>
+<p>旋转矩阵 <span class="arithmatex">\([R|t]\)</span> 是相机的外参矩阵，该矩阵是用来描述相机外部的旋转情况。也就是说，该矩阵将点 <span class="arithmatex">\((X,Y,Z)\)</span> 转换为相机固定的坐标系。其中，在<strong><em>OpenCV</em></strong>方法<strong><em>cameraCalibration</em></strong>中我们会得到的外部参数为：  </p>
+<div class="arithmatex">\[  
+R=\begin{bmatrix} \alpha &amp; \beta &amp; \gamma \end{bmatrix},
+t = \begin{bmatrix} t_x &amp; t_y &amp; t_z \end{bmatrix}
+\]</div>
+<p>若我们在使用时，额外输入了相机的外部参数的话，就会使用如下方式使用相机的外部参数：  </p>
+<div class="arithmatex">\[
+\begin{bmatrix} x \\
+y \\
+z
+\end{bmatrix} = R \begin{bmatrix} X \\
+Y \\
+Z
+\end{bmatrix} + t
+\]</div>
+<p>至此，我们就可以得到了在相机坐标系下的点。</p>
+<h3 id="22-">2.2、相机坐标系点-&gt;图像坐标系点<a class="headerlink" href="#22-" title="Permanent link">&para;</a></h3>
+<p>下一步即是将相机坐标系下的点投影到图像坐标系下，这是因为 <span class="arithmatex">\(2D\)</span> 平面下的点集更方便我们去处理。但其实实际处理过程中，由于我们的平台是和相机镜头所在平面尽可能平行，所以我们所有角点的 <span class="arithmatex">\(z\)</span> 方向上的值可以设为1。从而可以将投影步骤复杂度降低。并且，对于上述处理相机坐标系下的点时，我们也会将 <span class="arithmatex">\(Z\)</span> 值设为0，来假设我们的标定面垂直于Z轴（相机中轴线）。
+对于小孔成像的相机模型，我们的变换公式为：  </p>
+<div class="arithmatex">\[
+\binom{u}{v} = \frac{f}{z}\binom{x}{y}
+\]</div>
+<p>然而对于远心镜头，那么我们的焦距要添加一个负号：  </p>
+<div class="arithmatex">\[
+\binom{u}{v} = \frac{-f}{z}\binom{x}{y}
+\]</div>
+<h3 id="23-">2.3、图像坐标系点-&gt;应用相机径向畸变后的图像坐标系点<a class="headerlink" href="#23-" title="Permanent link">&para;</a></h3>
+<p>相机畸变现象导致的点集偏移误差情况如下图所示。<strong><em>OpenCV</em></strong>为我们提供了多项式模型来进行矫正，在<strong><em>HALCON</em></strong>中同时提供了多项式模型和除法模型，这两个模型针对不同的情况，无论是线扫相机还是面阵相机，都可以使用。
+对于我们的相机，一般是多项式模型的效果会比较好。其中特别的是，<strong><em>OpenCV</em></strong>和<strong><em>HALCON</em></strong>的多项式模型不太相同，前者使用的是<strong>Distortion Coefficient</strong>(畸变参数)，后者使用的是<strong>Radial-Tangential</strong>(径向切向)。两者的计算方法不同，<strong><em>OpenCV</em></strong>的计算方法为：  </p>
+<div class="arithmatex">\[
+u' = u(1 + k_1r^2 + k_2r^4 + k_3r^6) + 2p_1uv + p_2(r^2 + 2x'^2)
+\]</div>
+<div class="arithmatex">\[
+v' = v(1 + k_1r^2 + k_2k^4 + k_3r^6) + p_1(r^2 + 2v'^2) + 2p_2uv  
+\]</div>
+<p>其中， $<span class="arithmatex">\(r^2 = u^2 + v^2\)</span>$ 。
+<strong><em>HALCON</em></strong>的计算方法为：  </p>
+<div class="arithmatex">\[
+u' = u + (2p_1uv + p_2(r^2 + 2u^2)) + K_1r^2 + K_2r^4
+\]</div>
+<div class="arithmatex">\[
+v' = v + (2p_2uv + p_1(r^2 + 2v^2)) + K_3r^2 + K_4r^4
+\]</div>
+<p>其中， $<span class="arithmatex">\(r^2 = u^2 + v^2\)</span>$ 。  </p>
+<div align=center>
+<img src="https://raw.githubusercontent.com/DaleBruise/DaleBruise.github.io/main/docs/ImagesInFiles/cameraCalibration/distortion.png"/>  
+</div>
+
+<p><strong><em>HALCON</em></strong>也在其技术文档中提供了畸变参数的计算方式，均可以根据项目的情况使用，我们在此仅考虑畸变参数这一方式。对于五个参数： <span class="arithmatex">\(k_1,k_2,k_3,p_1,p_2\)</span> ，<strong><em>HALCON</em></strong>文档中也列出了，当他们的符号改变时对应的大致的畸变情况，来供我们参考我们算出的参数是否正确，如下图所示：  </p>
+<div align=center>
+<img src="https://raw.githubusercontent.com/DaleBruise/DaleBruise.github.io/main/docs/ImagesInFiles/cameraCalibration/effect_of_distortion.png"/>  
+</div>
+
+<h3 id="24-">2.4、应用相机径向畸变后的图像坐标系点-&gt;应用相机切向畸变后的图像坐标系点<a class="headerlink" href="#24-" title="Permanent link">&para;</a></h3>
+<p>相机在一些情况下，可能会出现本身的旋转偏移，这就是前面所提及的切向畸变。在极致平行的外界条件下，是可以不用考虑该步骤的，如果不考虑可以跳过本章节。相机切向畸变的情况如下图所示：  </p>
+<div align=center>
+<img src="https://raw.githubusercontent.com/DaleBruise/DaleBruise.github.io/main/docs/ImagesInFiles/cameraCalibration/tiltModel.png"/>   
+</div>
+
+<p>在不同相机模型的旋转情况下，会使用到不同的模型，<strong><em>OpenCV</em></strong>中使用到了<strong>Louhichi_H</strong>团队研究出来的模型，其计算方式如下所示：  </p>
+<div class="arithmatex">\[
+\begin{bmatrix} u'' \\  
+v'' \\
+1
+\end{bmatrix} 
+= \begin{bmatrix} r_{33}(\tau_x,\tau_y) &amp; 0 &amp; -r_{13}(\tau_x,\tau_y) \\
+0 &amp; r_{33}(\tau_x,\tau_y) &amp; -r_{23}(\tau_x,\tau_y) \\
+0 &amp; 0 &amp; 1  
+\end{bmatrix}
+R(\tau_x,\tau_y)
+\begin{bmatrix} u'\\ 
+v' \\ 
+1 
+\end{bmatrix}
+\]</div>
+<p>其中， <span class="arithmatex">\(R(\tau_x,\tau_y)\)</span> 的定义如下：  </p>
+<div class="arithmatex">\[
+R(\tau_x,\tau_y) 
+= \begin{bmatrix} cos(\tau_y) &amp; 0 &amp; -sin(\tau_y) \\
+0 &amp; 1 &amp; 0 \\
+sin(\tau_y) &amp; 0 &amp; cos(\tau_y)  
+\end{bmatrix}
+\begin{bmatrix} 1 &amp; 0 &amp; 0 \\
+0 &amp; cos(\tau_x) &amp; sin(\tau_x) \\
+0 &amp; -sin(\tau_x) &amp; cos(\tau_x)  
+\end{bmatrix}
+= \begin{bmatrix} cos(\tau_y) &amp; sin(\tau_y)sin(\tau_x) &amp; -sin(\tau_y)cos(\tau_x) \\
+0 &amp; cos(\tau_x) &amp; sin(\tau_x) \\
+sin(\tau_y) &amp; -cos(\tau_y)sin(\tau_x) &amp; cos(\tau_x)cos(\tau_y)
+\end{bmatrix}
+\]</div>
+<p>至此旋转部分的转换就结束了，关于具体的公式和计算原理推导，请参考作者的文献，我们在此不过多讲述。  </p>
+<h3 id="25-">2.5、应用相机畸变后的点-&gt;真实图像坐标系下的点<a class="headerlink" href="#25-" title="Permanent link">&para;</a></h3>
+<p>最终，当我们已经完成对畸变的所有处理后，就可以将点转换到图像坐标系下的点集。我们可以从先前建立的小孔成像的模型得到，在相机坐标系下中心点为坐标系的零点，但是在投影后的图像坐标系下，中心点的位置并不是零点而是图像中心点，我们最终需要将这个补偿加上。而且，画面还会有一定的缩放，加入缩放因子后，我们的表达式如下：  </p>
+<div class="arithmatex">\[
+\binom{c}{r} = \binom{\frac{u''}{s_x} + c_x}{\frac{v''}{s_y} + c_y}
+\]</div>
+<p>其中， $<span class="arithmatex">\(s_x,s_y\)</span>$ 即为缩放因子， <span class="arithmatex">\(c_x,c_y\)</span> 为图像中心坐标。我在前文提及到，该方法进行一次标定后，对于相同焦距的相机我们可以重复使用。因为由于画面被缩放了，因此我们需要最终改变点的大小，来应变画面的缩放。对于针孔相机，缩放因子就是CCD芯片上传感器原件的水平和垂直距离；对于远心相机，缩放因子则是世界坐标系中表示像素的实际大小比例。<br />
+到目前为止，畸变模型计算的流程就结束了。但是我们可能会有疑问，首先是我们如何计算这五个参数（ <span class="arithmatex">\(k_1,k_2,k_3,p_1,p_2\)</span> ）；以及外部参数在我们仅仅知道相机的内部参数的情况下，如何计算……等等，这类问题我会留在后面的附录中，不定时更新，有任何问题或者错误都可以填补！🙇‍</p>
+<h2 id="1_1">附录1<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h2>
+<h3 id="_2">径向畸变参数计算<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>我们需要进行计算的径向畸变参数有三个： <span class="arithmatex">\(k_1,k_2,k_3\)</span> 。我们设 <span class="arithmatex">\((u,v)\)</span> 为没有畸变情况的点， <span class="arithmatex">\((\hat{u}, \hat{v})\)</span> 为实际图像点， <span class="arithmatex">\((u_0,v_0)\)</span> 为图像中心点（我们默认无误差，中心没有畸变现象），由上述内容，我们可以得到如下公式：  </p>
+<div class="arithmatex">\[
+\hat{u} = u + (u-u_0)[k_1r^2 + k_2r^4 + k_3r^6]
+\]</div>
+<div class="arithmatex">\[
+\hat{v} = v + (v-v_0)[k_1r^2 + k_2r^4 + k_3r^6]
+\]</div>
+<p>其中， <span class="arithmatex">\(r^2 = u^2 + v^2\)</span> ，把上述公式转换成矩阵的形式，我们可以得到：  </p>
+<div class="arithmatex">\[
+\begin{bmatrix} (u-u_0)r^2 &amp; (u-u_0)r^4 &amp; (u-u_0)r^6 \\
+(v-v_0)r^2 &amp; (v-v_0)r^4 &amp; (v-v_0)r^6
+\end{bmatrix}
+\begin{bmatrix} k_1 \\
+k_2 \\
+k_3
+\end{bmatrix} 
+= \begin{bmatrix} \hat{u} - u \\
+\hat{v} - v
+\end{bmatrix}
+\]</div>
+<p>根据张正友老师的理论，我们可以使用线性最小二乘来解该线性方程组。首先我们有三个线性无关的向量 <span class="arithmatex">\((k_1, k_2, k_3)\)</span> ，这三个线性无关的向量张成了 <span class="arithmatex">\(\mathbb{R}^m\)</span> 上的3维子空间 <span class="arithmatex">\(V\)</span> （或者更高维，根据我们需要计算的参数而定）。我们可以设估计向量 <span class="arithmatex">\(\mathbf{p}\)</span> 为：  </p>
+<div class="arithmatex">\[
+\mathbf{p} = \mathbf{D}\begin{bmatrix} k_1 \\  
+k_2 \\  
+k_3 
+\end{bmatrix} = \mathbf{D}\hat{\mathbf{k}}
+\]</div>
+<p>其中，估计量向量 <span class="arithmatex">\(\mathbf{p}\)</span> 是实际量向量 <span class="arithmatex">\(\mathbf{d}\)</span> 在子空间上的投影。然后我们可以设误差向量 <span class="arithmatex">\(\mathbf{e}\)</span> 为实际量 <span class="arithmatex">\(\mathbf{d}\)</span> 向量和估计量向量之间的差：  </p>
+<div class="arithmatex">\[
+\mathbf{e} = \mathbf{d} - \mathbf{p}  
+\]</div>
+<p>由于估计量向量 <span class="arithmatex">\(\mathbf{p}\)</span> 是子空间 <span class="arithmatex">\(V\)</span> 的基向量线性组合而成的，因此 <span class="arithmatex">\(\mathbf{e} \bot \mathbf{v}\)</span> 并且, <span class="arithmatex">\(\forall\mathbf{v}\in V\)</span> 。
+也就是 <span class="arithmatex">\(\mathbf{D^\top}\mathbf{e} = 0\)</span> ，进一步，有：  </p>
+<div class="arithmatex">\[
+\mathbf{D^\top}(\mathbf{d} - \mathbf{p}) = 0 
+\implies \mathbf{D^\top}\mathbf{d} - \mathbf{D^\top}\mathbf{D}\mathbf{\hat{k}} = 0 \\  
+\implies \mathbf{\hat{k}} = (\mathbf{D^\top}\mathbf{D})^{-1}\mathbf{D^\top}\mathbf{d}
+\]</div>
+<p>也就是张正友老师在论文提出的最小二乘模型：  </p>
+<div class="arithmatex">\[
+\mathbf{k} = (\mathbf{D^\top} \mathbf{D})^{-1}\mathbf{D^\top} \mathbf{d}
+\]</div>
+<p>我们在一张棋盘格图像中，可以得到 <span class="arithmatex">\(m\)</span> 个角点，因此我们也就会有 <span class="arithmatex">\(m\)</span> 个该方程式。我们求解如上式子，就可以得到 <span class="arithmatex">\(k_1,k_2,k_3\)</span> 的初值。供接下来的非线性最小二乘法来进行求解迭代后的精确参数结果，其模型为：  </p>
+<div class="arithmatex">\[
+\sum_{i = 1}^{m} \begin{Vmatrix} \mathbf{m_i} - \mathbf{\hat{m}}(\mathbf{A}, k_1, k_2, k_3, \mathbf{R},\mathrm{t},\mathrm{M})\end{Vmatrix}^2
+\]</div>
+<p>其中， <span class="arithmatex">\(\mathbf{\hat{m}}(\mathbf{A}, k_1, k_2, k_3, \mathbf{R},\mathrm{t},\mathrm{M})\)</span> 是点 <span class="arithmatex">\(\mathrm{M}\)</span> 在当前图像下的投影。那么我们令 <span class="arithmatex">\(\mathbf{f(k)} = \mathbf{m_i} - \mathbf{\hat{m}}(\mathbf{A}, k_1, k_2, k_3, \mathbf{R},\mathrm{t},\mathrm{M})\)</span> ，其中 <span class="arithmatex">\(\mathbf{f}\)</span> 是一个含有三个未知量的标准差函数向量。我们想要找到最小的标准差对应的三个未知量的值，那么就是：  </p>
+<div class="arithmatex">\[
+x^* = argmax_x{F(x)}，
+\]</div>
+<p>其中， <span class="arithmatex">\(F(x)\)</span> 的定义为：  </p>
+<div class="arithmatex">\[
+F(x) = \frac{1}{2}\sum_{i = 1}^{m}(f_i(x))^2 = \frac{1}{2} {\begin{Vmatrix} \mathbf{f(x)} \end{Vmatrix}} ^ 2 = \frac{1}{2}\mathbf{f(x)}^{\top}\mathbf{f(x)}.
+\]</div>
+<p>默认 <span class="arithmatex">\(\mathbf{f}\)</span> 是连续二阶可导的函数的情况下，我们就可以对其进行泰勒一阶展开，并且利用雅可比矩阵表示，可以得到：  </p>
+<div class="arithmatex">\[
+\mathbf{f(x + h)} = \mathbf{f(x)} + \mathbf{J(x)h} + o({\begin{Vmatrix} \mathbf{h} \end{Vmatrix}} ^ 2)
+\]</div>
+<p>然后我们假设有一个模型 <span class="arithmatex">\(L\)</span> 来表示 <span class="arithmatex">\(F\)</span> 在当前迭代 <span class="arithmatex">\(x\)</span> 的领域中的行为，那么：  </p>
+<div class="arithmatex">\[
+\mathbf{f(x+h)} \simeq l\mathrm{h} \equiv \mathbf{f(x)} + \mathbf{J(x)h}
+\]</div>
+<p>由此，我们可以得到：  </p>
+<div class="arithmatex">\[
+\begin{aligned} F(\mathbf{x+h}) \simeq L(\mathbf{h}) &amp; \equiv \frac{1}{2}l(h)^{\top}l(\mathbf{h}) \\  
+&amp; = \frac{1}{2}\mathbf{f^{\top}f} + \mathbf{h^{\top}J^{\top}f} + \frac{1}{2}\mathbf{h^{\top}J^{\top}Jh} \\  
+&amp; = F(x) + \mathbf{h^{\top}J^{\top}f}+ \frac{1}{2}\mathbf{h^{\top}J^{\top}Jh} \end{aligned}  
+\]</div>
+<p>通过高斯牛顿优化方法原理，我们需要得到 <span class="arithmatex">\(L(h)\)</span> 的<em>jacobin</em>矩阵和<em>Hessian</em>矩阵：  </p>
+<div class="arithmatex">\[
+\mathbf{L'(h)} = \mathbf{J^{\top}f} + \mathbf{J^{\top}Jh},\  \mathbf{L''(h)} = \mathbf{J^{\top}J}.
+\]</div>
+<p>我们通过输入高斯扭断的上一次迭代参数 <span class="arithmatex">\(\mathbf{}h_{gn}\)</span> 来进行下一次迭代，因此我们需要求出下面这个式子：  </p>
+<div class="arithmatex">\[
+\mathbf{(J^{\top}J)h_{gn}} = -\mathbf{J^{\top}f}
+\]</div>
+<p>然而，我们使用的是经过 <strong>LM</strong> 算法优化的最小二乘迭代，所以上述式子会稍许不太一样，如下所示：  </p>
+<div class="arithmatex">\[
+(\mathbf{J^{\top}J} + \mu\mathbf{I})h_{lm} = -\mathbf{J^{\top}f} \, and \, \mu \geq 0
+\]</div>
+<p>其中 <span class="arithmatex">\(\mu\)</span> 是一个限制因子，从而根据得分来控制我们迭代的速度。这个得分 <span class="arithmatex">\(\rho\)</span> 的计算方式如下：  </p>
+<div class="arithmatex">\[
+\rho = \frac{F(\mathbf{x}) - F(\mathbf{x + h_lm})}{L(0) - L(\mathbf{h_lm})}
+\]</div>
+<p>根据上式中 <span class="arithmatex">\(L\)</span> 模型的特性，我们可以知道这个得分是一个大概率大于0的值，算法会根据这个得分来更改 <span class="arithmatex">\(\mu\)</span> 的值来控制迭代的速度。从而能够更加准确地估计出我们想要的参数。具体的推导流程和算法流程，可以参考 <em>K.Madsen</em> 的文献，名称会贴到附录2中。</p>
+<h2 id="2_1">附录2<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h2>
+<p>文章中的参考链接或文献如下：  </p>
+<ol>
+<li>畸变 <a href="https://en.wikipedia.org/wiki/Distortion_(optics">https://en.wikipedia.org/wiki/Distortion_(optics</a>)</li>
+<li><strong><em>HALCON</em></strong> 《Solution Guide Ⅲ-C 3D Vision》</li>
+<li><strong><em>OpenCV</em></strong> <a href="https://docs.opencv.org/3.4.1/d9/d0c/group__calib3d.html#ga3207604e4b1a1758aa66acb6ed5aa65d">https://docs.opencv.org/3.4.1/d9/d0c/group__calib3d.html#ga3207604e4b1a1758aa66acb6ed5aa65d</a></li>
+<li><strong><em>OpenCv</em></strong>源码解析 <a href="https://blog.csdn.net/weixin_43956164/article/details/126771627?spm=1001.2014.3001.5501">https://blog.csdn.net/weixin_43956164/article/details/126771627?spm=1001.2014.3001.5501</a></li>
+<li>Zhengyou Z. Flexible Camera Calibration By Viewing a Plane From Unknown Orientations [J] Seventh IEEE International Conference on Computer Vision.IEEE, 1999.DOI:10.1109/ICCV.1999.791289</li>
+<li>矩阵求导 <a href="https://zhuanlan.zhihu.com/p/273729929">https://zhuanlan.zhihu.com/p/273729929</a></li>
+<li>LM最小二乘优化 Note L. Methods for Non-Linear Least Squares Problems[J] Lecture Note [2023-11-21]</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../3D%20%E8%A7%86%E8%A7%89/Dyn%20HaMR/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Dyn-HaMR: Recovering 4D Interacting Hand Motion">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Dyn-HaMR: Recovering 4D Interacting Hand Motion
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../../%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%85%B7%E8%BA%AB%E6%99%BA%E8%83%BD/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/" class="md-footer__link md-footer__link--next" aria-label="Next: 学习路线">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                学习路线
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 The authors
+
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":["announce.dismiss","content.code.annotate","content.code.copy","content.code.select","content.footnote.tooltips","content.tabs.link","content.tooltips","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight"],"search":"../../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.00c35305.min.js"></script>
+      
+    
+  </body>
+</html>
