@@ -11,7 +11,7 @@
 我们经常遇到的畸变类型为径向畸变，径向畸变的特性就是从图像中心点出发，与靠近边缘的位置现象越明显，其大致可以分为桶型畸变和枕型畸变。  
  - **桶型畸变**中，图像的放大倍率随距主光轴（不偏移）的距离而减小，类似将一个图像投影到一个桶型或者球形的物体上。鱼眼镜头采用半球形视角，利用这种畸变可以扩大我们的视野范围，牺牲的则是物体在视野中的形变。  
 <div align=center>
-<img src="https://github.com/DaleBruise/DaleBruise/blob/main/docs/ImagesInFiles/cameraCalibration/barrel_distortion.png" width="192" height="193">  
+<img src="https://github.com/DaleBruise/DaleBruise/blob/main/docs/ImagesInFiles/cameraCalibration/barrel_distortion.png?raw=true" width="192" height="193">  
 </div>  
 
  - **枕型畸变**中，与桶型畸变相反，图像的放大倍数随着距主光轴（不偏移）的距离而变大，没有穿过图像中心的线条会向内弯曲。凸球面透镜往往就会产生枕型畸变。  
