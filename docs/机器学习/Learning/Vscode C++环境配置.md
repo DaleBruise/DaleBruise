@@ -18,7 +18,7 @@
 
 在命令行上输入以下指令，查看你是否已经正确安装了这两个库：  
 
-```py title=bash"
+```py title=“bash"
 clang++ --version
 lldb --version
 ```
