@@ -18,14 +18,14 @@
 
 在命令行上输入以下指令，查看你是否已经正确安装了这两个库：  
 
-```py title=“bash"
+```bash title=“bash"
 clang++ --version
 lldb --version
 ```
 
 如果没有正常弹出版本信息，那么你就重新安装一下 Xcode，Xcode 也可以在 bash 中下载：  
 
-```py title="bash"
+```bash title="bash" linenums="1"
 xcode-select --install
 ```
 
@@ -42,7 +42,7 @@ xcode-select --install
 
 所以我们要建立能运行中小型项目的工程工作区，一般来说经典的目录如下：
 
-```py title="text"
+```text title="text"
 MyCppProject/
 ├── src/main.cpp
 ├── include/MyList.h
@@ -51,7 +51,7 @@ MyCppProject/
 
 src 存放 CPP 文件，include 存放 hpp 文件，然后还可以建立一个 build 文件夹，来存放一些生成的文件。接下来，我们直接在 .vscode 这个目录下创建两个 json 文件：tasks.json 和 launch.json。我先贴出我的配置文件，然后再对其进行说明：
 
-```py title="tasks.json"
+```json title="tasks.json"
 {
     "version": "2.0.0",
     "tasks": [
@@ -97,7 +97,7 @@ src 存放 CPP 文件，include 存放 hpp 文件，然后还可以建立一个 
 }
 ```
 
-```py title="launch.json"
+```json title="launch.json"
 {
   "version": "0.2.0",
   "configurations": [
