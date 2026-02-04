@@ -16,16 +16,14 @@
 
 首先对于 MacOS 来讲，环境配置相对 Windows 会简单很多，我们需要下载 Xcode（*一般直接在 App Store 上下载即可*）。Xcode 包含了 clang++ 和 lldb 这两个必要的库。一般 MacOS 上用 lldb 就可以了。
 
-在命令行上输入以下指令，查看你是否已经正确安装了这两个库：
-
+在命令行上输入以下指令，查看你是否已经正确安装了这两个库：  
 
 ```py title=bash"
 clang++ --version
 lldb --version
 ```
 
-如果没有正常弹出版本信息，那么你就重新安装一下 Xcode，Xcode 也可以在 bash 中下载：
-
+如果没有正常弹出版本信息，那么你就重新安装一下 Xcode，Xcode 也可以在 bash 中下载：  
 
 ```py title="bash"
 xcode-select --install
