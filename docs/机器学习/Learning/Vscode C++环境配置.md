@@ -18,11 +18,6 @@
 
 在命令行上输入以下指令，查看你是否已经正确安装了这两个库：  
 
-```bash title=“bash"
-clang++ --version
-lldb --version
-```
-
 如果没有正常弹出版本信息，那么你就重新安装一下 Xcode，Xcode 也可以在 bash 中下载：  
 
 ```bash title="bash" linenums="1"
