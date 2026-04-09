@@ -21,4 +21,15 @@
 - divisibility n. 可分性；[数]可除性
 - arithmetic adj. 算数的
 - appendix n. 附录
-- catastrophic adj. 毁灭性的
+- catastrophic adj. 毁灭性的  
+
+--- 
+
+## "LSD: a Line Segment Detector"  
+
+- contour n. 轮廓
+- aligned adj. 结盟；使一致
+- nevertheless adv. 然而
+- aliasing n. 错误识别；错认假频伪信号
+- rectangular approximation n. 矩形近似法
+
