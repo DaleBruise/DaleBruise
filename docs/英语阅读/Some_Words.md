@@ -33,3 +33,33 @@
 - aliasing n. 错误识别；错认假频伪信号
 - rectangular approximation n. 矩形近似法
 
+---
+
+## "Meta-Transfer Learning Powered Temporal Graph Networks for Cross-City Real Estate Appraisal"
+
+- temporal adj. 时序的
+- appraisal n. 评估
+
+--- 
+
+## "Generative Adversarial Nets"
+
+- adversarial adj. 对抗的；对手的
+- discriminative adj. 区别的；有识别力的
+- arbitrary adj. 任意的
+- perceptron n. 感知模型
+- backpropagation n. 反向传播
+- inference n. 推断；推理
+- hierarchical adj. 层次的
+- intractable adj. 棘手的；难治的
+- piecewise adj. 分段的
+- counterfeit v. 伪造
+- yield v. 产生
+- minimax n. 极大极小
+- i.e. addr. 即（id est）
+- convergence n. 收敛
+- primarily adv. 主要地；首要地
+- degenerate adj. 恶化的
+
+--- 
+
