@@ -10,7 +10,7 @@ The course's Link: [Tom Looman](https://courses.tomlooman.com)
 
 > *PS: only need the generation tool with the version of 2019. The VS2019's Link: [Visual Studio 2019](https://pan.baidu.com/s/1ML-Yf2-r6cQKNp1avORFvA?pwd=frhu). If you are using VS2026, first you need to install VS2022 generation tool, subsequently you could install the generation tool with version of VS2019.*
 
-There are bunch of name specification need to be clear:
+There are bunch of name specification need to be clear:   
 - **U** : 引擎对象，UE反射系统的基础，支持垃圾回收、序列化等等
 - **A** : 演员，可以放置在场景中，拥有各种图形学变换的功能支持
 - **F** : 普通结构体，不具备反射系统，纯数据结构，内存管理需要C++的支持
