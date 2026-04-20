@@ -77,3 +77,32 @@ FORCEINLINE_DEBUGGABLE FVector AActor::GetActorForwardVector()
 > 在**AddInputVector**这个函数中，比较有意思的点在于，这个所属类的Prefix是**U**，但是这个类保存了其所属的**APawn**类，所以二者是友元关系。  
 > 最终在处理这个向量的过程中，**APawn**类中保存了成员变量*ControlInputVector*这个基础上加上我们的输入。这个原因在于在同一时间，会有很多个向量的输入，所以为了综合考量这个输入，所以就使用了向量加法，构成最终的向量。
 
+
+## GamePlay Collision & Physics
+
+### Character Input & Rotations
+
+The Character's input needs improvement. First of all, we need to set the ControlRotation to true. And there are some notion need to be clear, which are **pitch**, **yaw** and **roll**. 
+
+In UE system, axis **X** means **forward**, axis **Y** means **right** and axis **Z** means **up**. In this coordinate system, the above several concepts are the Euler angles in the three-dimensional world. **Pitch** is the angle rotates around the axis **Y**, **Yaw** is the angle rotates around the axis **Z**, and **Roll** is the angle rotates around the axis **X**.
+
+### Some Function Notion
+
+``` c++ linenums="1"
+FORCEINLINE class UCharacterMovementComponent* GetCharacterMovement() const;
+```
+
+> **UCharacterMovementComponent**封装了大量的移动相关功能，例如行走、跑步、跳跃、坠落、飞行和游泳等等。并且也融合了很多的高级物理模拟功能
+
+``` c++ linenums="1"
+AddMovementInput(GetActorForwardVector(), value);
+
+auto ControlRot = GetControlRotation();
+ControlRot.Pitch = 0.0f;
+ControlRot.Roll = 0.0f;
+AddMovementInput(FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
+```
+
+> **FRotationMatrix**是根据你的输入情况得到的对应欧拉角角度变换差。而**GetActorForwardVector**是角色的向量角，使用这个函数会导致当我们向左运动时，会不停地原地旋转。我们把Pitch和Roll设置为零，就仅考虑Yaw角度即可。
+
+
