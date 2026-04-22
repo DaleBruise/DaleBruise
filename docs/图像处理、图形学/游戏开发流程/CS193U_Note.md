@@ -131,4 +131,68 @@ inline AActor* UWorld::SpawnActor<AActor>(UClass* class, const FTransform, const
 > 最终使用**GetWorld**函数获取当前游戏上下文，然后使用**SpawnActor**生成一个AActor实例，传入函数需要的旋转、位置参数、物理碰撞参数和物体的类型。
 > 其中需要特殊说明的是：**TSubclassOf**这个类是在创建一个类的子类时经常用到的。其相比UClass，可以更加显式地指明这是什么类，并且说明了其父类是什么。
 
+## Interfaces & Collision Queries
+
+### C++ Interfaces
+
+**Unreal Interfaces** is been made for general instrument, such as interactions, functions, team work and so on. It's aim is providing services for diverse components by using unified method. 
+
+When we choose **Unreal Interfaces**, UE will generate two class. One starts with U and the other starts with I. **I** is for dll export, it is the real functioning module. **U** aims at being detected by the Unreal Engine's *Reflection System*.
+
+Its logic is, you need to inherit this class when you are to use this interactions. Then we could use its member virtual function.
+
+### Some Function Notion
+
+``` c++ linenums="1"
+ISGamePlayInterface::Execute_Interact(UObject* O, Apawn* InstigatorPawn);
+```
+
+> **Execute_Interact**是UE用来给蓝图设计的投影函数。如果是仅仅在C++的多态环境中，仅需要调用自己创建的ISGamePlayInterface类中的 Interact 成员函数即可。但是在蓝图中，这个函数就会失效，即程序是看不见的。这是就需要UE中的reflection function来产生一个中间过程的函数 Execute_Interact。首先其会判断在蓝图中有没有这个接口函数，如果没有那么就会直接调用C++类中的成员函数。
+
+``` c++ linenums="1"
+AActor* MyOwner = GetOwner();
+FVector EyeLocation; //This may not the correct position in 3rd Game
+FRotator EyeRotation;
+MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+auto End = EyeLocation + (EyeRotation.Vector() * 1000);
+
+FCollisionObjectQueryParams ObjectQueryParams;
+ObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
+
+constexpr float Radius = 30.0f;
+FCollisionShape Shape;
+Shape.SetSphere(Radius);
+
+TArray<FHitResult> Hits;
+bool IfSphereHit = GetWorld()->SweepMultiByObjectType(
+	Hits,
+	EyeLocation, End,
+	FQuat::Identity,
+	ObjectQueryParams,
+	Shape
+);
+FColor LineColor = IfSphereHit ? FColor::Green : FColor::Red;
+
+for (const auto& Hit : Hits) {
+	AActor* HitActor = Hit.GetActor();
+	if (HitActor != nullptr) {
+		if (HitActor->Implements<USGamePlayInterface>()) {
+			APawn* MyPawn = Cast<APawn>(MyOwner);
+			ISGamePlayInterface::Execute_Interact(HitActor, MyPawn);
+			break;
+		}
+	}
+
+	DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 20.f);
+}
+
+/*Draw debug*/
+DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+```
+
+> 这是一段经典的交互场景下的代码。首先通过确定眼睛的位置来判断我们的物体是否在我们鼠标或者人物朝向的方向上，然后通过判断这条线上是否存在一个物体（原理类似于光线追踪）。若物体存在，则就可以进行交互操作
+> **GetActorEyesViewPoint**即我们确定眼睛的向量函数，1000是距离，确定线段的终点在哪里
+> 但是这样子的判断是一个点，很多时候，交互的物体会很小。此时可以使用**SweepMultiByObjectType**函数来判断在一个圆球中，是否有物体碰撞。其中**ECC_WorldDynamic**这个参数是用来确定物体的query性质，即我们的物体是动态移动的。回到**SweepMultiByObjectType**这个函数，该函数最终可以获得一堆在圆球中的物体，但是我们仅仅是需要一个，所以在for循环中，我们只要获取到了一个，就会break掉，跳出循环，而不是将所有的物体都进行互动，当然也可以根据设计需要进行调整
+> **Implements**确定了这个物体是否是可交互的。然后使用**Execute_Interact**，传入玩家（Instigator），让物体根据操作定义来进行动作。
+
 
