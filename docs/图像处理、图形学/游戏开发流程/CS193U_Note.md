@@ -86,6 +86,12 @@ The Character's input needs improvement. First of all, we need to set the Contro
 
 In UE system, axis **X** means **forward**, axis **Y** means **right** and axis **Z** means **up**. In this coordinate system, the above several concepts are the Euler angles in the three-dimensional world. **Pitch** is the angle rotates around the axis **Y**, **Yaw** is the angle rotates around the axis **Z**, and **Roll** is the angle rotates around the axis **X**.
 
+### Magic Projectile Attack
+
+This section is about the attck part of the character. The character is able to attck due to the projectile module. 
+
+First of all, we need the mesh of the projectile, and we find the character's skeleton and bind the projectile to the hand of the character. 
+
 ### Some Function Notion
 
 ``` c++ linenums="1"
@@ -104,5 +110,25 @@ AddMovementInput(FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 ```
 
 > **FRotationMatrix**是根据你的输入情况得到的对应欧拉角角度变换差。而**GetActorForwardVector**是角色的向量角，使用这个函数会导致当我们向左运动时，会不停地原地旋转。我们把Pitch和Roll设置为零，就仅考虑Yaw角度即可。
+
+``` c++ linenums="1"
+inline USKeletalMeshComponent* ACharacter::GetMesh() const;
+
+virtual FVector USceneXomponent::GetSocketLocation(FName InSocketName) const;
+
+FActorSpawnParameters SpawnParams;
+SpawnParams.SpawnCollisionHandlingOverride = 
+    ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+virtual UWorld* AActor::GetWorld() const override;
+inline AActor* UWorld::SpawnActor<AActor>(UClass* class, const FTransform, const FActorSpawnParameters &SpawnParameters);
+```
+
+> **GetMesh**用来获取这个网状网络（通常就是预先做好的人物模型、物体模型等等）
+> **GetSocketLocation**用来获得制定部位的位置，输出为向量格式。上面两步就是用来获得手部（或者其他的你想要设定的位置）的位置
+> **FTransform**用来记录Actor的位置和旋转方向
+> **FActorSpawnParameters**中，这个override参数是用来将Projectile无条件发射出去。即便人物的手已经在墙体里了，也不会消失或者被阻挡。
+> 最终使用**GetWorld**函数获取当前游戏上下文，然后使用**SpawnActor**生成一个AActor实例，传入函数需要的旋转、位置参数、物理碰撞参数和物体的类型。
+> 其中需要特殊说明的是：**TSubclassOf**这个类是在创建一个类的子类时经常用到的。其相比UClass，可以更加显式地指明这是什么类，并且说明了其父类是什么。
 
 
